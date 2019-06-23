@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>路径导航</title>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" href="css/BaiduMapAPI.css"/>
+		<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=rOxbUP17yLUG6QTxGxebFGeVn8jvRLG7"></script>
+		<script type="text/javascript" src="js/BaidudituAPI.js" ></script>
+		<!--加载鼠标绘制工具-->
+		<script type="text/javascript" src="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></script>
+		<link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />	
+		<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+	</head>
+<body onload="init()"> 
+	</div>
+			<article id="search">
+				城市名称：<input type="text" id="cityName" value=""/>
+				检索名称：<input type="text" id="text_search" value=""/>
+				<input type="button" id="btn_search" value="开始检索" onclick="localsearch()" cls/>
+				<input type="button" id="btn_search" value="分页显示" onclick="searchpage()" />
+				<input type="button" id="btn_Bayi" value="家" onclick="addBayi()"/> 
+				<input type="button" id="btn_Guangdong" value="公司" onclick="addGuangdong()"/> 
+				<input type="button" id="btn_Shanghai" value="地铁站" onclick="addShanghai()"/> 
+				<input type="button" id="btn_Beijing" value="公交站" onclick="addBeijing()"/> 
+				<input type="button" id="btn_fullscreen" value="显示全部" onclick="fullscreen()"/> 	
+		<br />
+				输入起点：<input type="text" id="tex_a" value="" /><div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
+				输入终点：<input type="text" id="tex_b" value="" /><div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
+				<input type="button" id="btn_WalkouteQuery" value="步行规划" onclick="WalkRouteQuery()" />
+				<input type="button" id="btn_WalkouteQuery" value="乘车路线" onclick="DrivingQuery()" />	
+				<input type="button" id="btn_WalkouteQuery" value="公交路线" onclick="BusQuery()" />
+				<a href="MapBox.html"><button>路线展示</button></a>
+			</article>
+			<article id="baidumap">
+				<p>
+					
+				</p>
+			</article>
+			<article id="r-result">
+
+			</article>
+		<!--底部-->	
+					
+						<div class="clearfix"> </div>
+					</div>
+				</div>
+				</div>
+		</div>
+	</body>
+</html>

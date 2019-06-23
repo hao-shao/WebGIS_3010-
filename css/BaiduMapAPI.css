@@ -1,0 +1,25 @@
+#baidumap{
+	/*最大宽度980px*/
+	max-width: 11180px;
+	/*宽度百分百*/
+	width:100%;
+	/*无边界自动调整*/
+	margin:0 auto;
+	/*相对位置*/
+	height:570px;
+	overflow:hidden;
+}
+#querycontent{
+	background: #808080;
+}
+#addsomemaker{
+	margin:0 auto;
+	width:100%;
+	text-align: center;
+}
+legend{
+	background:white;
+}
+#search{
+	background: white;
+}

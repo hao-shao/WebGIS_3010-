@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+		<style>
+			html,
+			body {
+				height: 100%;
+				margin: 0;
+				padding: 0;
+			}		
+			#div {
+				width: 50%;
+				height: 100%;
+				background-color: aqua;
+			}			
+			#map1 {
+				width: 20%;
+				height: 70%;
+				position: absolute;
+				float: left;
+				z-index: 50;
+			}		
+			#map2 {
+				width: 100%;
+				height: 100%;
+				position: relative;
+				float: right;
+			}		
+			#scale {
+				width: 180px;
+				bottom: 20px;
+				left: 820px;
+				position: absolute;
+				z-index: 80;
+				background-color: lightyellow;
+				border-radius: 8px;
+				padding: 10px;
+				opacity: 0.75;
+			}
+			
+			#coordinate {
+				width: 180px;
+				bottom: 20px;
+				left: 20px;
+				position: absolute;
+				z-index: 80;
+				background-color: skyblue;
+				border-radius: 8px;
+				padding: 10px;
+				opacity: 0.75;
+			}
+			
+			#layersnumber {
+				width: 90px;
+				top: 105px;
+				right: 20px;
+				position: absolute;
+				z-index: 99;
+				background-color: #00FFFF;
+				border-radius: 8px;
+				padding: 10px;
+				opacity: 0.75;
+			}
+			#drawsym {
+				text-decoration: none;
+				width: 90px;
+				top: 150px;
+				right: 20px;
+				position: absolute;
+				z-index: 99;
+				background-color: #31B0D5;
+				border-radius: 8px;
+				padding: 10px;
+				opacity: 0.75;
+			}
+			
+			#layerToggle {
+				top: 60px;
+				right: 20px;
+				position: absolute;
+				z-index: 50;
+				background-color: mistyrose;
+				border-radius: 8px;
+				padding: 10px;
+				opacity: 0.75;
+			}
+			
+			.header {
+				position: absolute;
+				top: 0;
+				width: 46%;
+				right: 0px;
+				height: 10%;
+				z-index: 99;
+			}
+			
+			.btns {
+				margin: 0 auto;
+				display: flex;
+				flex-direction: row;
+				justify-content: center;
+				align-items: center;
+				overflow: auto;
+			}
+			
+			.btn-switch {
+				flex-grow: 4;
+				background-color: rgba(20, 20, 20, 0.3);
+				color: #FFF;
+				margin: 1px;
+				width: 50%;
+				padding: 20px;
+				overflow: auto;
+				text-align: center;
+				cursor: pointer;
+				font-size: 0.7em;
+			}
+			
+			.active-map {
+				color: #fff;
+				background-color: rgba(20, 20, 20, 0.3);
+			}
+		</style>
+
+		<link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/css/main.css">
+		<script src="https://js.arcgis.com/4.11/"></script>
+		<script>
+			var mtype = 0;
+			function clipImage() {
+				if(mtype == 1) {
+					console.log(event.clientX);
+					document.getElementById("map1").style.clip = "rect(0px," + event.clientX + "px,500px,0px)";
+				}
+
+			}
+			function mapSwitch(v) {
+				if(v == 0) {
+
+					mtype = 1;
+				} else {
+					mtype = 0;
+				}
+			}
+			require([
+				"esri/Map",
+				"esri/views/MapView",
+				"esri/core/watchUtils",
+				"esri/layers/ImageryLayer",
+				"esri/views/SceneView",
+				"esri/layers/TileLayer",
+				"dojo/domReady!"
+			], function(Map, MapView, watchUtils, ImageryLayer, SceneView, TileLayer, ) {
+				var webmapids = [
+					"osm",
+					"gray",
+					"dark-gray"
+				];
+				var webmaps = webmapids.map(function(webmapid) {
+					return new Map({
+						basemap: webmapid
+
+					});
+				});
+				
+				
+				 
+				var map1 = new Map({
+					basemap: "hybrid",
+					ground: "world-elevation"
+				});
+
+				
+				
+				var transportationLayer = new TileLayer({
+					url: "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer",
+					// This property can be used to uniquely identify the layer
+					id: "streets",
+					visible: false
+				});
+				webmaps[0].add(transportationLayer);
+				var senceview = new SceneView({
+					container: "map2",
+					map: webmaps[0]
+				});
+				var view1 = new SceneView({
+					container: "map1",
+					map: map1,
+					zoom: 3,
+					center: { // autocasts as esri/geometry/Point
+						x: 105,
+						y: 35,
+					},
+
+				});
+
+				var view2 = new MapView({
+					container: "map2",
+					map: webmaps[0],
+					zoom: 14,
+					center: { // autocasts as esri/geometry/Point
+						x: 114.326,
+						y: 30.568,
+					},
+				});
+
+//---------------------------联动效果的实现----------------------
+				watchUtils.whenTrue(view1, "stationary", function() {
+					if(view1.extent) {
+
+						view2.extent = view1.extent;
+						
+					}
+				});
+
+				watchUtils.whenTrue(view2, "stationary", function() {
+
+					if(view2.extent) {
+						view1.extent = view2.extent;
+						
+					}
+
+				});
+				
+	//-------------添加比例尺与坐标---------------			
+				var zuobiao = document.getElementById("coordinate");
+				var scale = document.getElementById("scale");
+
+				view2.on('pointer-move', function(evt) {
+					var point = view2.toMap({
+						x: evt.x,
+						y: evt.y
+					});
+					zuobiao.textContent = "坐标：" +point.longitude.toFixed(3) + "," + point.latitude.toFixed(3);
+					scale.textContent = "比例尺：" + view2.scale.toFixed(3);
+				});
+
+				var streetsLayerToggle = document.getElementById("streetsLayer");
+				streetsLayerToggle.addEventListener("change", function() {
+					transportationLayer.visible = streetsLayerToggle.checked;
+					var layernbs = document.getElementById("layersnumber");
+					layernbs.textContent = "图层数量:" + view2.map.layers.items.length;
+				});
+				var removelayer = document.getElementById("remove");
+				removelayer.addEventListener("change", function() {
+					if(remove.checked == true) {
+						if(streetsLayer.checked) {
+							view2.map.remove(transportationLayer);
+
+							var layernbs = document.getElementById("layersnumber");
+							layernbs.textContent = "图层数量:" + view2.map.layers.items.length;
+
+						} else {
+							alert("请先加载图层");
+							remove.checked = false;
+						}
+
+					} else {
+						view2.map.add(transportationLayer);
+
+						var layernbs = document.getElementById("layersnumber");
+						layernbs.textContent = "图层数量:" + view2.map.layers.items.length;
+					}
+
+				});
+
+				document.querySelector(".btns").addEventListener("click", function(
+					event) {
+					/************************************************************
+					 * On a button click, change the map of the View
+					 ************************************************************/
+					var id = event.target.getAttribute("data-id");
+					if(id) {
+						var webmap = webmaps[id];
+						view2.map = webmap;
+						var nodes = document.querySelectorAll(".btn-switch");
+						for(var idx = 0; idx < nodes.length; idx++) {
+							var node = nodes[idx];
+							var mapIndex = node.getAttribute("data-id");
+							if(mapIndex === id) {
+								node.classList.add("active-map");
+							} else {
+								node.classList.remove("active-map");
+							}
+						}
+					}
+				});
+
+			});
+		</script>
+	</head>
+
+	<body>
+		<a href="drawsym.html">
+		<button id="drawsym">符号绘制</button>
+		</a>
+		<section class="header">
+			<div class="btns">
+				<div class="btn-switch active-map" data-id="0">White</div>
+				<div class="btn-switch" data-id="1">Gray</div>
+				<div class="btn-switch" data-id="2">Dark</div>
+			</div>
+		</section>
+		<div id="layersnumber">NO:0</div>
+		<div onmousemove="clipImage()" onclick="mapSwitch(mtype)">
+			<div id="map1">
+			</div>		
+		</div>
+		<div id="map2">
+                <div id="coordinate"></div>
+				<div id="scale"></div>
+		</div>
+		<span id="layerToggle">
+		  <input type="checkbox" id="streetsLayer"/> Streets
+		  <input type="checkbox" id="remove"/>Clear
+		</span>
+	</body>
+
+</html>
